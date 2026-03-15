@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Una é¤æéæ²</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  color: white;
+}
+.game-container {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px);
+  border-radius: 28px;
+  padding: 24px;
+  width: 400px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+.game-header { text-align: center; margin-bottom: 12px; }
+.game-title { font-size: 30px; font-weight: 900; letter-spacing: 3px; text-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+.stage-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 4px 16px;
+  font-size: 13px;
+  margin-top: 6px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* Una display */
+.una-display {
+  background: rgba(0,0,0,0.22);
+  border-radius: 22px;
+  padding: 20px;
+  margin: 14px 0;
+  text-align: center;
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.una-display::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.06), transparent 70%);
+  pointer-events: none;
+}
+.una-sprite { transition: transform 0.3s ease; }
+.una-sprite.bounce { animation: bounce 0.6s ease; }
+.una-sprite.shake  { animation: shake 0.5s ease; }
+.una-sprite.sleeping { animation: breathe 2s ease infinite; }
+@keyframes bounce   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-22px)} }
+@keyframes shake    { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)} }
+@keyframes breathe  { 0%,100%{transform:scale(1)} 50%{transform:scale(0.93)} }
+.emotion-bubble {
+  position: absolute; top: 12px; right: 14px;
+  font-size: 26px; animation: popIn 0.3s ease;
+}
+@keyframes popIn { 0%{transform:scale(0)} 70%{transform:scale(1.3)} 100%{transform:scale(1)} }
+.una-name { font-size: 20px; font-weight: 800; margin-top: 10px; }
+.level-display { font-size: 13px; opacity: 0.75; margin-top: 2px; }
+
+/* Stats */
+.stats-section { margin: 14px 0; }
+.stat-row { display:flex; align-items:center; margin-bottom:9px; gap:8px; }
+.stat-icon { font-size:18px; width:28px; text-align:center; }
+.stat-label { font-size:13px; width:44px; opacity:.9; }
+.stat-bar-container { flex:1; background:rgba(0,0,0,0.22); border-radius:10px; height:13px; overflow:hidden; }
+.stat-bar { height:100%; border-radius:10px; transition:width 0.5s ease; }
+.stat-bar.hunger    { background: linear-gradient(90deg,#f093fb,#f5576c); }
+.stat-bar.happiness { background: linear-gradient(90deg,#4facfe,#00f2fe); }
+.stat-bar.energy    { background: linear-gradient(90deg,#43e97b,#38f9d7); }
+.stat-bar.exp       { background: linear-gradient(90deg,#fa709a,#fee140); }
+.stat-value { font-size:12px; width:38px; text-align:right; opacity:.8; }
+
+/* Actions */
+.actions-section { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+.action-btn {
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.28);
+  border-radius: 16px;
+  padding: 14px 8px;
+  color: white;
+  cursor: pointer;
+  font-size:13px; font-weight:700;
+  text-align:center;
+  transition: all 0.2s ease;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+}
+.action-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.26);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+.action-btn:active:not(:disabled) { transform:translateY(0); }
+.action-btn:disabled { opacity:.35; cursor:not-allowed; }
+.action-btn .btn-icon { font-size:26px; }
+.battle-btn {
+  grid-column:1/-1;
+  background: linear-gradient(135deg,rgba(255,100,50,.35),rgba(255,50,100,.35));
+  border-color: rgba(255,150,100,.5);
+}
+
+/* Message */
+.message-log {
+  background: rgba(0,0,0,0.2);
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size:13px; min-height:40px; opacity:.9;
+  border-left: 3px solid rgba(255,255,255,0.35);
+  line-height: 1.5;
+}
+
+/* Battle */
+.battle-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.85); z-index:100;
+  align-items:center; justify-content:center;
+}
+.battle-overlay.active { display:flex; }
+.battle-screen {
+  background: linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
+  border-radius:28px; padding:24px; width:380px; color:white;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+.battle-title {
+  text-align:center; font-size:22px; font-weight:900; margin-bottom:18px;
+  color:#ffd700; text-shadow:0 0 20px rgba(255,215,0,.5);
+}
+.battle-field { display:flex; justify-content:space-between; align-items:center; margin:16px 0; }
+.battler { text-align:center; flex:1; }
+.battler-name { font-size:13px; font-weight:700; margin-bottom:6px; }
+.battler-hp-bar { background:rgba(255,255,255,.1); border-radius:6px; height:11px; margin-top:6px; overflow:hidden; }
+.battler-hp-fill { height:100%; border-radius:6px; transition:width 0.5s ease; background:linear-gradient(90deg,#43e97b,#38f9d7); }
+.battler-hp-fill.enemy { background:linear-gradient(90deg,#f5576c,#f093fb); }
+.vs-text { font-size:30px; font-weight:900; color:#ffd700; padding:0 14px; }
+.battle-log {
+  background:rgba(0,0,0,.3); border-radius:12px; padding:12px;
+  min-height:80px; font-size:12px; margin:12px 0; line-height:1.7;
+  max-height:100px; overflow-y:auto;
+}
+.battle-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.battle-action-btn {
+  background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+  border-radius:12px; padding:12px; color:white; cursor:pointer;
+  font-size:13px; font-weight:700; transition:all .2s;
+}
+.battle-action-btn:hover:not(:disabled) { background:rgba(255,255,255,.22); transform:translateY(-2px); }
+.battle-action-btn:disabled { opacity:.35; cursor:not-allowed; }
+.flee-btn { grid-column:1/-1; background:rgba(255,50,50,.2); border-color:rgba(255,100,100,.3); }
+
+/* Evolution */
+.evolution-overlay {
+  display:none; position:fixed; inset:0;
+  background:white; z-index:200;
+  align-items:center; justify-content:center; flex-direction:column;
+  font-size:34px; font-weight:900; color:#5B21B6;
+}
+.evolution-overlay.active { display:flex; animation:evoFlash 2.5s ease forwards; }
+@keyframes evoFlash { 0%{opacity:0} 15%{opacity:1} 85%{opacity:1} 100%{opacity:0} }
+</style>
+</head>
+<body>
+<div class="game-container">
+  <div class="game-header">
+    <div class="game-title">â¨ UNA â¨</div>
+    <div class="stage-badge" id="stageBadge">ð¥ å¹¼å¹´æ</div>
+  </div>
+
+  <div class="una-display" onclick="petUna()">
+    <div class="una-sprite" id="unaSprite"></div>
+    <div class="emotion-bubble" id="emotionBubble"></div>
+    <div class="una-name">Una</div>
+    <div class="level-display" id="levelDisplay">Lv.1 &nbsp;ï½&nbsp; é»ææ«æ¸ Una</div>
+  </div>
+
+  <div class="stats-section">
+    <div class="stat-row">
+      <span class="stat-icon">ð</span>
+      <span class="stat-label">é£½é£</span>
+      <div class="stat-bar-container"><div class="stat-bar hunger" id="hungerBar" style="width:80%"></div></div>
+      <span class="stat-value" id="hungerVal">80</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-icon">ð</span>
+      <span class="stat-label">å¿«æ¨</span>
+      <div class="stat-bar-container"><div class="stat-bar happiness" id="happinessBar" style="width:70%"></div></div>
+      <span class="stat-value" id="happinessVal">70</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-icon">â¡</span>
+      <span class="stat-label">ç²¾å</span>
+      <div class="stat-bar-container"><div class="stat-bar energy" id="energyBar" style="width:90%"></div></div>
+      <span class="stat-value" id="energyVal">90</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-icon">â­</span>
+      <span class="stat-label">ç¶é©</span>
+      <div class="stat-bar-container"><div class="stat-bar exp" id="expBar" style="width:0%"></div></div>
+      <span class="stat-value" id="expVal">0/20</span>
+    </div>
+  </div>
+
+  <div class="actions-section">
+    <button class="action-btn" onclick="feedUna()">
+      <span class="btn-icon">ð</span><span>é¤µé£</span>
+    </button>
+    <button class="action-btn" id="playBtn" onclick="playWithUna()">
+      <span class="btn-icon">ð®</span><span>ç©è</span>
+    </button>
+    <button class="action-btn" id="sleepBtn" onclick="sleepUna()">
+      <span class="btn-icon">ð´</span><span>ç¡è¦º</span>
+    </button>
+    <button class="action-btn" onclick="healUna()">
+      <span class="btn-icon">ð</span><span>æ«æ¸</span>
+    </button>
+    <button class="action-btn battle-btn" id="battleBtn" onclick="startBattle()">
+      <span class="btn-icon">âï¸</span><span>å°æ°ï¼</span>
+    </button>
+  </div>
+
+  <div class="message-log" id="messageLog">ð¬ Una å¨ç­å¾ä½ çç§é¡§...</div>
+</div>
+
+<!-- Battle Overlay -->
+<div class="battle-overlay" id="battleOverlay">
+  <div class="battle-screen">
+    <div class="battle-title">âï¸ å° æ°ï¼</div>
+    <div class="battle-field">
+      <div class="battler">
+        <div id="unaFighterSprite"></div>
+        <div class="battler-name">Una</div>
+        <div id="unaHpText" style="font-size:11px;opacity:.8"></div>
+        <div class="battler-hp-bar"><div class="battler-hp-fill" id="unaHpFill" style="width:100%"></div></div>
+      </div>
+      <div class="vs-text">VS</div>
+      <div class="battler">
+        <div id="enemySprite" style="font-size:52px;text-align:center;line-height:1.1"></div>
+        <div class="battler-name" id="enemyName">???</div>
+        <div id="enemyHpText" style="font-size:11px;opacity:.8"></div>
+        <div class="battler-hp-bar"><div class="battler-hp-fill enemy" id="enemyHpFill" style="width:100%"></div></div>
+      </div>
+    </div>
+    <div class="battle-log" id="battleLog"></div>
+    <div class="battle-actions">
+      <button class="battle-action-btn" id="attackBtn" onclick="battleAttack()">âï¸ æ»æ</button>
+      <button class="battle-action-btn" id="specialBtn" onclick="battleSpecial()">â¨ å¿æ®ºæ</button>
+      <button class="battle-action-btn flee-btn" onclick="fleeBattle()">ð éè·</button>
+    </div>
+  </div>
+</div>
+
+<!-- Evolution Overlay -->
+<div class="evolution-overlay" id="evolutionOverlay">
+  <div style="font-size:64px;animation:bounce 1s infinite">â¨</div>
+  <div style="margin-top:12px">Una é²åäºï¼</div>
+  <div id="evolutionText" style="font-size:20px;margin-top:8px;color:#7C3AED;font-weight:700"></div>
+</div>
+
+<script>
+// âââââââââââââââââââ GAME STATE âââââââââââââââââââ
+const S = {
+  hunger: 80, happiness: 70, energy: 90,
+  exp: 0, level: 1, stage: 0,
+  isSleeping: false, battleActive: false,
+  hp: 100, maxHp: 100, atk: 15, specialUsed: false
+};
+
+const STAGES = [
+  { name:'ð¥ å¹¼å¹´æ', minLevel:0,  expPerLv:20 },
+  { name:'ð± æé·æ', minLevel:5,  expPerLv:40 },
+  { name:'ð æçæ', minLevel:12, expPerLv:70 },
+  { name:'ð å®å¨é«', minLevel:22, expPerLv:120 },
+];
+
+// âââââââââââââââââââ SVG SPRITES âââââââââââââââââââ
+function svgEyes(e, ox=0, oy=0) {
+  const ex = [35+ox, 65+ox], ey = [38+oy, 38+oy];
+  if (e==='happy')    return `<path d="M${ex[0]-6} ${ey[0]+2} Q${ex[0]} ${ey[0]-6} ${ex[0]+6} ${ey[0]+2}" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+    <path d="M${ex[1]-6} ${ey[1]+2} Q${ex[1]} ${ey[1]-6} ${ex[1]+6} ${ey[1]+2}" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`;
+  if (e==='sleeping') return `<path d="M${ex[0]-6} ${ey[0]-1} Q${ex[0]} ${ey[0]+6} ${ex[0]+6} ${ey[0]-1}" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+    <path d="M${ex[1]-6} ${ey[1]-1} Q${ex[1]} ${ey[1]+6} ${ex[1]+6} ${ey[1]-1}" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`;
+  if (e==='sad')      return `<path d="M${ex[0]-6} ${ey[0]+5} Q${ex[0]} ${ey[0]-3} ${ex[0]+6} ${ey[0]+5}" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M${ex[1]-6} ${ey[1]+5} Q${ex[1]} ${ey[1]-3} ${ex[1]+6} ${ey[1]+5}" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>`;
+  return `<circle cx="${ex[0]}" cy="${ey[0]}" r="5" fill="#222"/>
+    <circle cx="${ex[1]}" cy="${ey[1]}" r="5" fill="#222"/>
+    <circle cx="${ex[0]+2}" cy="${ey[0]-2}" r="2" fill="white"/>
+    <circle cx="${ex[1]+2}" cy="${ey[1]-2}" r="2" fill="white"/>`;
+}
+
+function svgMouth(e, mx=50, my=55) {
+  if (e==='happy')    return `<path d="M${mx-12} ${my-2} Q${mx} ${my+10} ${mx+12} ${my-2}" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`;
+  if (e==='sleeping') return `<path d="M${mx-7} ${my} Q${mx} ${my+4} ${mx+7} ${my}" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>`;
+  if (e==='sad')      return `<path d="M${mx-10} ${my+6} Q${mx} ${my-4} ${mx+10} ${my+6}" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>`;
+  return `<path d="M${mx-10} ${my} Q${mx} ${my+8} ${mx+10} ${my}" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`;
+}
+
+function getUnaLarge(stage, emo='normal') {
+  const zzz = emo==='sleeping' ? '<text x="70" y="25" font-size="16">ð¤</text>' : '';
+  if (stage===0) return `
+    <svg width="110" height="130" viewBox="0 0 100 120">
+      <ellipse cx="50" cy="65" rx="38" ry="46" fill="#FFD1DC" stroke="rgba(255,255,255,.5)" stroke-width="2"/>
+      <ellipse cx="50" cy="65" rx="30" ry="36" fill="#FFAEC9" opacity=".25"/>
+      ${svgEyes(emo)} ${svgMouth(emo)} ${zzz}
+    </svg>`;
+  if (stage===1) return `
+    <svg width="120" height="150" viewBox="0 0 110 145">
+      <ellipse cx="25" cy="32" rx="11" ry="20" fill="#C8A0E0" transform="rotate(-18,25,32)"/>
+      <ellipse cx="85" cy="32" rx="11" ry="20" fill="#C8A0E0" transform="rotate(18,85,32)"/>
+      <ellipse cx="25" cy="32" rx="6.5" ry="13" fill="#F0D0FF" transform="rotate(-18,25,32)"/>
+      <ellipse cx="85" cy="32" rx="6.5" ry="13" fill="#F0D0FF" transform="rotate(18,85,32)"/>
+      <ellipse cx="55" cy="90" rx="30" ry="40" fill="#C8A0E0"/>
+      <circle cx="55" cy="55" r="32" fill="#D8B4F8"/>
+      <ellipse cx="55" cy="95" rx="18" ry="22" fill="#F0D0FF" opacity=".55"/>
+      <path d="M87 98 Q104 82 98 115" fill="none" stroke="#C8A0E0" stroke-width="6" stroke-linecap="round"/>
+      ${svgEyes(emo,20,17)} ${svgMouth(emo,55,56)} ${zzz}
+    </svg>`;
+  if (stage===2) return `
+    <svg width="145" height="165" viewBox="0 0 140 160">
+      <path d="M14 72 Q2 40 30 52 Q18 74 30 80 Z" fill="#A78BFA" opacity=".85"/>
+      <path d="M126 72 Q138 40 110 52 Q122 74 110 80 Z" fill="#A78BFA" opacity=".85"/>
+      <ellipse cx="70" cy="115" rx="38" ry="44" fill="#8B5CF6"/>
+      <circle cx="70" cy="67" r="38" fill="#A78BFA"/>
+      <polygon points="60,30 70,8 80,30" fill="#FCD34D"/>
+      <circle cx="70" cy="8" r="5" fill="#F59E0B"/>
+      <ellipse cx="70" cy="118" rx="22" ry="26" fill="#C4B5FD" opacity=".5"/>
+      <circle cx="54" cy="64" r="7" fill="#1a1a1a"/>
+      <circle cx="86" cy="64" r="7" fill="#1a1a1a"/>
+      <circle cx="56" cy="62" r="3" fill="white"/>
+      <circle cx="88" cy="62" r="3" fill="white"/>
+      ${svgMouth(emo,70,80)} ${zzz}
+    </svg>`;
+  return `
+    <svg width="155" height="175" viewBox="0 0 150 170">
+      <circle cx="75" cy="90" r="72" fill="none" stroke="#FCD34D" stroke-width="1.5" opacity=".35" stroke-dasharray="9,5"/>
+      <path d="M8 82 Q-12 42 30 57 Q14 82 30 90 Z" fill="#6D28D9" opacity=".9"/>
+      <path d="M142 82 Q162 42 120 57 Q136 82 120 90 Z" fill="#6D28D9" opacity=".9"/>
+      <path d="M10 80 Q22 60 30 70" fill="none" stroke="#A78BFA" stroke-width="2"/>
+      <path d="M140 80 Q128 60 120 70" fill="none" stroke="#A78BFA" stroke-width="2"/>
+      <ellipse cx="75" cy="122" rx="42" ry="48" fill="#5B21B6"/>
+      <path d="M38 112 Q75 96 112 112 L112 154 Q75 164 38 154 Z" fill="#6D28D9" opacity=".45"/>
+      <circle cx="75" cy="72" r="42" fill="#7C3AED"/>
+      <path d="M44 37 L54 16 L65 32 L75 10 L85 32 L96 16 L106 37 Z" fill="#FCD34D"/>
+      <circle cx="54" cy="16" r="4" fill="#F59E0B"/>
+      <circle cx="75" cy="10" r="5" fill="#EF4444"/>
+      <circle cx="96" cy="16" r="4" fill="#10B981"/>
+      <circle cx="57" cy="69" r="9" fill="#111"/>
+      <circle cx="93" cy="69" r="9" fill="#111"/>
+      <circle cx="59" cy="66" r="3.5" fill="white"/>
+      <circle cx="95" cy="66" r="3.5" fill="white"/>
+      <circle cx="60" cy="65" r="1.5" fill="#FCD34D"/>
+      <circle cx="96" cy="65" r="1.5" fill="#FCD34D"/>
+      ${svgMouth(emo,75,88)}
+      <text x="18" y="56" font-size="13">â¦</text>
+      <text x="122" y="56" font-size="13">â¦</text>
+      <text x="62" y="168" font-size="11">â¦ â¦ â¦</text>
+      ${zzz}
+    </svg>`;
+}
+
+function getUnaSmall(stage) {
+  if (stage===0) return `<svg width="55" height="66" viewBox="0 0 100 120">
+    <ellipse cx="50" cy="65" rx="38" ry="46" fill="#FFD1DC"/>
+    <circle cx="35" cy="42" r="5" fill="#222"/><circle cx="65" cy="42" r="5" fill="#222"/>
+    <circle cx="37" cy="40" r="2" fill="white"/><circle cx="67" cy="40" r="2" fill="white"/>
+    <path d="M40 58 Q50 65 60 58" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+  </svg>`;
+  if (stage===1) return `<svg width="66" height="80" viewBox="0 0 110 145">
+    <ellipse cx="25" cy="32" rx="11" ry="20" fill="#C8A0E0" transform="rotate(-18,25,32)"/>
+    <ellipse cx="85" cy="32" rx="11" ry="20" fill="#C8A0E0" transform="rotate(18,85,32)"/>
+    <ellipse cx="55" cy="90" rx="30" ry="40" fill="#C8A0E0"/>
+    <circle cx="55" cy="55" r="32" fill="#D8B4F8"/>
+    <circle cx="44" cy="48" r="5" fill="#222"/><circle cx="66" cy="48" r="5" fill="#222"/>
+    <circle cx="46" cy="46" r="2" fill="white"/><circle cx="68" cy="46" r="2" fill="white"/>
+    <path d="M44 60 Q55 68 66 60" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+  </svg>`;
+  if (stage===2) return `<svg width="80" height="92" viewBox="0 0 140 160">
+    <path d="M14 72 Q2 40 30 52 Q18 74 30 80 Z" fill="#A78BFA" opacity=".85"/>
+    <path d="M126 72 Q138 40 110 52 Q122 74 110 80 Z" fill="#A78BFA" opacity=".85"/>
+    <ellipse cx="70" cy="115" rx="38" ry="44" fill="#8B5CF6"/>
+    <circle cx="70" cy="67" r="38" fill="#A78BFA"/>
+    <polygon points="60,30 70,8 80,30" fill="#FCD34D"/>
+    <circle cx="54" cy="64" r="7" fill="#1a1a1a"/><circle cx="86" cy="64" r="7" fill="#1a1a1a"/>
+    <circle cx="56" cy="62" r="3" fill="white"/><circle cx="88" cy="62" r="3" fill="white"/>
+    <path d="M58 82 Q70 90 82 82" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
+  </svg>`;
+  return `<svg width="80" height="92" viewBox="0 0 150 170">
+    <path d="M8 82 Q-12 42 30 57 Q14 82 30 90 Z" fill="#6D28D9" opacity=".9"/>
+    <path d="M142 82 Q162 42 120 57 Q136 82 120 90 Z" fill="#6D28D9" opacity=".9"/>
+    <ellipse cx="75" cy="122" rx="42" ry="48" fill="#5B21B6"/>
+    <circle cx="75" cy="72" r="42" fill="#7C3AED"/>
+    <path d="M44 37 L54 16 L65 32 L75 10 L85 32 L96 16 L106 37 Z" fill="#FCD34D"/>
+    <circle cx="57" cy="69" r="9" fill="#111"/><circle cx="93" cy="69" r="9" fill="#111"/>
+    <circle cx="59" cy="66" r="3.5" fill="white"/><circle cx="95" cy="66" r="3.5" fill="white"/>
+    <path d="M60 88 Q75 98 90 88" fill="none" stroke="#ddd" stroke-width="3" stroke-linecap="round"/>
+  </svg>`;
+}
+
+// âââââââââââââââââââ UI HELPERS âââââââââââââââââââ
+let curEmo = 'normal', sleepTimer = null;
+
+function updateSprite(emo) {
+  if (emo) curEmo = emo;
+  else if (S.isSleeping) curEmo = 'sleeping';
+  else if (S.hunger < 20 || S.happiness < 20) curEmo = 'sad';
+  else if (S.happiness > 80) curEmo = 'happy';
+  else curEmo = 'normal';
+  document.getElementById('unaSprite').innerHTML = getUnaLarge(S.stage, curEmo);
+  document.getElementById('unaFighterSprite').innerHTML = getUnaSmall(S.stage);
+}
+
+function updateStats() {
+  const bar = (id,v,m=100) => { document.getElementById(id).style.width = Math.max(0,Math.min(100,v/m*100))+'%'; };
+  bar('hungerBar',S.hunger); document.getElementById('hungerVal').textContent = Math.round(S.hunger);
+  bar('happinessBar',S.happiness); document.getElementById('happinessVal').textContent = Math.round(S.happiness);
+  bar('energyBar',S.energy); document.getElementById('energyVal').textContent = Math.round(S.energy);
+  const epl = STAGES[S.stage].expPerLv;
+  bar('expBar',S.exp,epl); document.getElementById('expVal').textContent = `${S.exp}/${epl}`;
+  document.getElementById('levelDisplay').textContent = `Lv.${S.level} ï½ é»ææ«æ¸ Una`;
+  document.getElementById('stageBadge').textContent = STAGES[S.stage].name;
+}
+
+function msg(txt) { document.getElementById('messageLog').textContent = 'ð¬ '+txt; }
+
+function emo(e) {
+  const el = document.getElementById('emotionBubble');
+  el.textContent = e; el.style.animation='none'; void el.offsetWidth; el.style.animation='popIn 0.3s ease';
+  setTimeout(() => el.textContent='', 2200);
+}
+
+function anim(cls) {
+  const sp = document.getElementById('unaSprite');
+  sp.classList.add(cls); setTimeout(()=>sp.classList.remove(cls), 700);
+}
+
+// âââââââââââââââââââ ACTIONS âââââââââââââââââââ
+function feedUna() {
+  if (S.isSleeping) { msg('Una æ­£å¨ç¡è¦º...'); return; }
+  if (S.hunger >= 96) { msg('Una å·²ç¶å¾é£½äºï¼'); emo('ð¤'); return; }
+  S.hunger = Math.min(100, S.hunger+22); gainExp(2);
+  emo('ð'); anim('bounce'); msg('Una åå¾å¥½éå¿ï¼å§å§å§å§ï½');
+  updateStats(); updateSprite();
+}
+
+function playWithUna() {
+  if (S.isSleeping) { msg('Una æ­£å¨ç¡è¦º...'); return; }
+  if (S.energy < 12) { msg('Una å¤ªç´¯äºï¼è®ç ä¼æ¯å§ï¼'); emo('ð©'); return; }
+  S.happiness = Math.min(100, S.happiness+22);
+  S.energy = Math.max(0, S.energy-16);
+  S.hunger = Math.max(0, S.hunger-6);
+  gainExp(3); emo('ð'); anim('bounce'); msg('Una ç©å¾è¶éå¿ï¼');
+  updateStats(); updateSprite();
+}
+
+function sleepUna() {
+  if (S.isSleeping) {
+    S.isSleeping = false; clearInterval(sleepTimer);
+    document.getElementById('sleepBtn').innerHTML='<span class="btn-icon">ð´</span><span>ç¡è¦º</span>';
+    msg('Una éä¾äºï¼ç²¾ååæ²ï¼'); emo('âï¸'); anim('bounce'); updateSprite('normal');
+    return;
+  }
+  S.isSleeping = true;
+  document.getElementById('sleepBtn').innerHTML='<span class="btn-icon">â°</span><span>å«é</span>';
+  msg('Una é²å¥å¤¢é... é»æãå«éãåéç '); updateSprite('sleeping');
+  sleepTimer = setInterval(() => {
+    S.energy = Math.min(100, S.energy+5);
+    updateStats();
+    if (S.energy >= 100) {
+      S.isSleeping = false; clearInterval(sleepTimer);
+      document.getElementById('sleepBtn').innerHTML='<span class="btn-icon">ð´</span><span>ç¡è¦º</span>';
+      msg('Una ç¡é£½äºï¼ç²¾åæ»¿æ ¼ï¼'); emo('â¨'); updateSprite('happy');
+    }
+  }, 1400);
+}
+
+function healUna() {
+  if (S.isSleeping) { msg('Una æ­£å¨ç¡è¦º...'); return; }
+  S.happiness = Math.min(100, S.happiness+12);
+  emo('ð'); anim('bounce'); msg('ä½ æº«æå°æ«æ¸äº Unaï¼ç å¹¸ç¦å°çèµ·ç¼çï¼');
+  updateStats(); updateSprite();
+}
+
+function petUna() {
+  if (S.isSleeping) return;
+  const emojis = ['ð','â¨','ð«','ð¸','â­','ð','ð'];
+  emo(emojis[Math.floor(Math.random()*emojis.length)]);
+  S.happiness = Math.min(100, S.happiness+3);
+  anim('bounce'); updateStats(); updateSprite();
+}
+
+// âââââââââââââââââââ EXP & EVOLUTION âââââââââââââââââââ
+function gainExp(n) {
+  S.exp += n;
+  const epl = STAGES[S.stage].expPerLv;
+  if (S.exp >= epl) {
+    S.exp -= epl; S.level++;
+    S.maxHp = Math.min(250, S.maxHp+12); S.atk += 2;
+    // check evolution
+    let newStage = S.stage;
+    for (let i = S.stage+1; i < STAGES.length; i++) {
+      if (S.level >= STAGES[i].minLevel) newStage = i;
+    }
+    if (newStage > S.stage) {
+      triggerEvolution(newStage);
+    } else {
+      emo('â¬ï¸'); msg(`Una åå° Lv.${S.level} äºï¼`);
+    }
+  }
+  updateStats();
+}
+
+function triggerEvolution(ns) {
+  const ov = document.getElementById('evolutionOverlay');
+  document.getElementById('evolutionText').textContent = `é²åæ ${STAGES[ns].name}ï¼`;
+  ov.classList.add('active');
+  setTimeout(() => { S.stage = ns; ov.classList.remove('active'); updateSprite('happy'); msg(`â¨ Una é²åæ ${STAGES[ns].name} äºï¼`); updateStats(); }, 2500);
+}
+
+// âââââââââââââââââââ STAT DECAY âââââââââââââââââââ
+setInterval(() => {
+  if (!S.isSleeping && !S.battleActive) {
+    S.hunger    = Math.max(0, S.hunger    - 1.2);
+    S.happiness = Math.max(0, S.happiness - 0.6);
+    S.energy    = Math.max(0, S.energy    - 0.4);
+    updateStats(); updateSprite();
+    if (S.hunger < 20 && Math.random()<.25) { msg('Una å¥¹é¤... å¿«ä¾é¤µé£ï¼'); emo('ð'); }
+    if (S.happiness < 20 && Math.random()<.2) { msg('Una å¥½ç¡è... éªç ç©å§ï¼'); emo('ð¢'); }
+  }
+}, 5000);
+
+// âââââââââââââââââââ BATTLE SYSTEM âââââââââââââââââââ
+const ENEMIES = [
+  { name:'å°å²èå§',  emoji:'ð¢', hp:40,  atk:7,  reward:5 },
+  { name:'ç«ç°è²',    emoji:'ð±', hp:65,  atk:13, reward:9 },
+  { name:'é»æ°£é¾',    emoji:'ð', hp:90,  atk:19, reward:13 },
+  { name:'æå½±ç²¾é',  emoji:'ð§', hp:120, atk:25, reward:18 },
+  { name:'å®å®å¤§é­ç',emoji:'ð¾', hp:180, atk:35, reward:28 },
+];
+
+let B = { enemy:null, unaHp:0, eTurn:false };
+
+function startBattle() {
+  if (S.isSleeping) { msg('Una æ­£å¨ç¡è¦ºï¼'); return; }
+  if (S.energy < 20) { msg('Una å¤ªç´¯äºï¼ç¡æ³å°æ°ï¼'); emo('ð©'); return; }
+  const idx = Math.min(Math.floor(S.level/5), ENEMIES.length-1);
+  const pool = ENEMIES.slice(0, idx+1);
+  const e = { ...pool[Math.floor(Math.random()*pool.length)] };
+  e.maxHp = e.hp;
+  B = { enemy:e, unaHp:S.maxHp };
+  S.battleActive = true; S.specialUsed = false;
+  document.getElementById('enemySprite').textContent = e.emoji;
+  document.getElementById('enemyName').textContent = e.name;
+  updateBattleHP();
+  document.getElementById('battleLog').textContent = `âï¸ éçç ${e.name} åºç¾äºï¼`;
+  document.getElementById('attackBtn').disabled = false;
+  document.getElementById('specialBtn').disabled = false;
+  document.getElementById('battleOverlay').classList.add('active');
+}
+
+function bLog(t) { const l=document.getElementById('battleLog'); l.textContent+='\n'+t; l.scrollTop=l.scrollHeight; }
+
+function updateBattleHP() {
+  const up = Math.max(0,B.unaHp)/S.maxHp*100;
+  const ep = Math.max(0,B.enemy.hp)/B.enemy.maxHp*100;
+  document.getElementById('unaHpFill').style.width = up+'%';
+  document.getElementById('enemyHpFill').style.width = ep+'%';
+  document.getElementById('unaHpText').textContent = `HP: ${Math.max(0,B.unaHp)}/${S.maxHp}`;
+  document.getElementById('enemyHpText').textContent = `HP: ${Math.max(0,B.enemy.hp)}/${B.enemy.maxHp}`;
+}
+
+function doEnemyTurn() {
+  const d = Math.max(1, B.enemy.atk + Math.floor(Math.random()*8)-3);
+  B.unaHp -= d;
+  bLog(`ð¥ ${B.enemy.name} æ»æï¼Una åå° ${d} é»å·å®³ï¼`);
+  updateBattleHP();
+  if (B.unaHp <= 0) { endBattle(false); return; }
+  document.getElementById('attackBtn').disabled = false;
+  document.getElementById('specialBtn').disabled = S.specialUsed;
+}
+
+function battleAttack() {
+  document.getElementById('attackBtn').disabled=true;
+  document.getElementById('specialBtn').disabled=true;
+  const d = Math.max(1, S.atk + Math.floor(Math.random()*10)-4);
+  B.enemy.hp -= d;
+  bLog(`â¨ Una æ»æï¼é æ ${d} é»å·å®³ï¼`);
+  updateBattleHP();
+  if (B.enemy.hp <= 0) { endBattle(true); return; }
+  setTimeout(doEnemyTurn, 800);
+}
+
+function battleSpecial() {
+  if (S.specialUsed) return;
+  S.specialUsed = true;
+  document.getElementById('attackBtn').disabled=true;
+  document.getElementById('specialBtn').disabled=true;
+  const d = Math.max(1, S.atk*2 + Math.floor(Math.random()*12));
+  B.enemy.hp -= d;
+  bLog(`â¡ Una ä½¿åºå¿æ®ºæï¼é æ ${d} é»å·¨å¤§å·å®³ï¼`);
+  updateBattleHP();
+  if (B.enemy.hp <= 0) { endBattle(true); return; }
+  setTimeout(doEnemyTurn, 800);
+}
+
+function endBattle(won) {
+  S.battleActive = false;
+  document.getElementById('attackBtn').disabled=true;
+  document.getElementById('specialBtn').disabled=true;
+  if (won) {
+    gainExp(B.enemy.reward);
+    S.happiness = Math.min(100, S.happiness+18);
+    S.energy = Math.max(0, S.energy-18);
+    bLog(`\nð Una ç²åï¼ç²å¾ ${B.enemy.reward} é»ç¶é©å¼ï¼`);
+    msg(`Una ææäº ${B.enemy.name}o¼å¤ªå²å®³äºï¼`);
+  } else {
+    S.happiness = Math.max(0, S.happiness-22);
+    S.energy = Math.max(0, S.energy-30);
+    bLog('\nð¢ Una ä¸æ¯åå°... éè¦å¥½å¥½ä¼æ¯ï¼');
+    msg('Una è¼¸æäºå°æ°ï¼å¿«è®ç ç¡è¦ºæ¢å¾©å§ï¼');
+  }
+  updateStats();
+  setTimeout(() => {
+    document.getElementById('battleOverlay').classList.remove('active');
+    updateSprite(won ? 'happy' : 'sad');
+  }, 1600);
+}
+
+function fleeBattle() {
+  S.battleActive = false;
+  document.getElementById('battleOverlay').classList.remove('active');
+  msg('Una æåéè·äºï¼'); updateSprite();
+}
+
+// âââââââââââââââââââ INIT âââââââââââââââââââ
+updateSprite('normal');
+updateStats();
+</script>
+</body>
+</html>

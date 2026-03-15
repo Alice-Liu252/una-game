@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Una é¤æéæ²</title>
+<title>Una 養成遊戲</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -178,39 +178,39 @@ body {
 <body>
 <div class="game-container">
   <div class="game-header">
-    <div class="game-title">â¨ UNA â¨</div>
-    <div class="stage-badge" id="stageBadge">ð¥ å¹¼å¹´æ</div>
+    <div class="game-title">✨ UNA ✨</div>
+    <div class="stage-badge" id="stageBadge">🥚 幼年期</div>
   </div>
 
   <div class="una-display" onclick="petUna()">
     <div class="una-sprite" id="unaSprite"></div>
     <div class="emotion-bubble" id="emotionBubble"></div>
     <div class="una-name">Una</div>
-    <div class="level-display" id="levelDisplay">Lv.1 &nbsp;ï½&nbsp; é»ææ«æ¸ Una</div>
+    <div class="level-display" id="levelDisplay">Lv.1 &nbsp;｜&nbsp; 點擊撫摸 Una</div>
   </div>
 
   <div class="stats-section">
     <div class="stat-row">
-      <span class="stat-icon">ð</span>
-      <span class="stat-label">é£½é£</span>
+      <span class="stat-icon">🍖</span>
+      <span class="stat-label">飽食</span>
       <div class="stat-bar-container"><div class="stat-bar hunger" id="hungerBar" style="width:80%"></div></div>
       <span class="stat-value" id="hungerVal">80</span>
     </div>
     <div class="stat-row">
-      <span class="stat-icon">ð</span>
-      <span class="stat-label">å¿«æ¨</span>
+      <span class="stat-icon">😊</span>
+      <span class="stat-label">快樂</span>
       <div class="stat-bar-container"><div class="stat-bar happiness" id="happinessBar" style="width:70%"></div></div>
       <span class="stat-value" id="happinessVal">70</span>
     </div>
     <div class="stat-row">
-      <span class="stat-icon">â¡</span>
-      <span class="stat-label">ç²¾å</span>
+      <span class="stat-icon">⚡</span>
+      <span class="stat-label">精力</span>
       <div class="stat-bar-container"><div class="stat-bar energy" id="energyBar" style="width:90%"></div></div>
       <span class="stat-value" id="energyVal">90</span>
     </div>
     <div class="stat-row">
-      <span class="stat-icon">â­</span>
-      <span class="stat-label">ç¶é©</span>
+      <span class="stat-icon">⭐</span>
+      <span class="stat-label">經驗</span>
       <div class="stat-bar-container"><div class="stat-bar exp" id="expBar" style="width:0%"></div></div>
       <span class="stat-value" id="expVal">0/20</span>
     </div>
@@ -218,29 +218,29 @@ body {
 
   <div class="actions-section">
     <button class="action-btn" onclick="feedUna()">
-      <span class="btn-icon">ð</span><span>é¤µé£</span>
+      <span class="btn-icon">🍖</span><span>餵食</span>
     </button>
     <button class="action-btn" id="playBtn" onclick="playWithUna()">
-      <span class="btn-icon">ð®</span><span>ç©è</span>
+      <span class="btn-icon">🎮</span><span>玩耍</span>
     </button>
     <button class="action-btn" id="sleepBtn" onclick="sleepUna()">
-      <span class="btn-icon">ð´</span><span>ç¡è¦º</span>
+      <span class="btn-icon">😴</span><span>睡覺</span>
     </button>
     <button class="action-btn" onclick="healUna()">
-      <span class="btn-icon">ð</span><span>æ«æ¸</span>
+      <span class="btn-icon">💖</span><span>撫摸</span>
     </button>
     <button class="action-btn battle-btn" id="battleBtn" onclick="startBattle()">
-      <span class="btn-icon">âï¸</span><span>å°æ°ï¼</span>
+      <span class="btn-icon">⚔️</span><span>對戰！</span>
     </button>
   </div>
 
-  <div class="message-log" id="messageLog">ð¬ Una å¨ç­å¾ä½ çç§é¡§...</div>
+  <div class="message-log" id="messageLog">💬 Una 在等待你的照顧...</div>
 </div>
 
 <!-- Battle Overlay -->
 <div class="battle-overlay" id="battleOverlay">
   <div class="battle-screen">
-    <div class="battle-title">âï¸ å° æ°ï¼</div>
+    <div class="battle-title">⚔️ 對 戰！</div>
     <div class="battle-field">
       <div class="battler">
         <div id="unaFighterSprite"></div>
@@ -258,22 +258,22 @@ body {
     </div>
     <div class="battle-log" id="battleLog"></div>
     <div class="battle-actions">
-      <button class="battle-action-btn" id="attackBtn" onclick="battleAttack()">âï¸ æ»æ</button>
-      <button class="battle-action-btn" id="specialBtn" onclick="battleSpecial()">â¨ å¿æ®ºæ</button>
-      <button class="battle-action-btn flee-btn" onclick="fleeBattle()">ð éè·</button>
+      <button class="battle-action-btn" id="attackBtn" onclick="battleAttack()">⚔️ 攻擊</button>
+      <button class="battle-action-btn" id="specialBtn" onclick="battleSpecial()">✨ 必殺技</button>
+      <button class="battle-action-btn flee-btn" onclick="fleeBattle()">🏃 逃跑</button>
     </div>
   </div>
 </div>
 
 <!-- Evolution Overlay -->
 <div class="evolution-overlay" id="evolutionOverlay">
-  <div style="font-size:64px;animation:bounce 1s infinite">â¨</div>
-  <div style="margin-top:12px">Una é²åäºï¼</div>
+  <div style="font-size:64px;animation:bounce 1s infinite">✨</div>
+  <div style="margin-top:12px">Una 進化了！</div>
   <div id="evolutionText" style="font-size:20px;margin-top:8px;color:#7C3AED;font-weight:700"></div>
 </div>
 
 <script>
-// âââââââââââââââââââ GAME STATE âââââââââââââââââââ
+// ─────────────────── GAME STATE ───────────────────
 const S = {
   hunger: 80, happiness: 70, energy: 90,
   exp: 0, level: 1, stage: 0,
@@ -282,13 +282,13 @@ const S = {
 };
 
 const STAGES = [
-  { name:'ð¥ å¹¼å¹´æ', minLevel:0,  expPerLv:20 },
-  { name:'ð± æé·æ', minLevel:5,  expPerLv:40 },
-  { name:'ð æçæ', minLevel:12, expPerLv:70 },
-  { name:'ð å®å¨é«', minLevel:22, expPerLv:120 },
+  { name:'🥚 幼年期', minLevel:0,  expPerLv:20 },
+  { name:'🌱 成長期', minLevel:5,  expPerLv:40 },
+  { name:'🌟 成熟期', minLevel:12, expPerLv:70 },
+  { name:'💎 完全體', minLevel:22, expPerLv:120 },
 ];
 
-// âââââââââââââââââââ SVG SPRITES âââââââââââââââââââ
+// ─────────────────── SVG SPRITES ───────────────────
 function svgEyes(e, ox=0, oy=0) {
   const ex = [35+ox, 65+ox], ey = [38+oy, 38+oy];
   if (e==='happy')    return `<path d="M${ex[0]-6} ${ey[0]+2} Q${ex[0]} ${ey[0]-6} ${ex[0]+6} ${ey[0]+2}" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>
@@ -311,7 +311,7 @@ function svgMouth(e, mx=50, my=55) {
 }
 
 function getUnaLarge(stage, emo='normal') {
-  const zzz = emo==='sleeping' ? '<text x="70" y="25" font-size="16">ð¤</text>' : '';
+  const zzz = emo==='sleeping' ? '<text x="70" y="25" font-size="16">💤</text>' : '';
   if (stage===0) return `
     <svg width="110" height="130" viewBox="0 0 100 120">
       <ellipse cx="50" cy="65" rx="38" ry="46" fill="#FFD1DC" stroke="rgba(255,255,255,.5)" stroke-width="2"/>
@@ -366,9 +366,9 @@ function getUnaLarge(stage, emo='normal') {
       <circle cx="60" cy="65" r="1.5" fill="#FCD34D"/>
       <circle cx="96" cy="65" r="1.5" fill="#FCD34D"/>
       ${svgMouth(emo,75,88)}
-      <text x="18" y="56" font-size="13">â¦</text>
-      <text x="122" y="56" font-size="13">â¦</text>
-      <text x="62" y="168" font-size="11">â¦ â¦ â¦</text>
+      <text x="18" y="56" font-size="13">✦</text>
+      <text x="122" y="56" font-size="13">✦</text>
+      <text x="62" y="168" font-size="11">✦ ✦ ✦</text>
       ${zzz}
     </svg>`;
 }
@@ -411,7 +411,7 @@ function getUnaSmall(stage) {
   </svg>`;
 }
 
-// âââââââââââââââââââ UI HELPERS âââââââââââââââââââ
+// ─────────────────── UI HELPERS ───────────────────
 let curEmo = 'normal', sleepTimer = null;
 
 function updateSprite(emo) {
@@ -431,11 +431,11 @@ function updateStats() {
   bar('energyBar',S.energy); document.getElementById('energyVal').textContent = Math.round(S.energy);
   const epl = STAGES[S.stage].expPerLv;
   bar('expBar',S.exp,epl); document.getElementById('expVal').textContent = `${S.exp}/${epl}`;
-  document.getElementById('levelDisplay').textContent = `Lv.${S.level} ï½ é»ææ«æ¸ Una`;
+  document.getElementById('levelDisplay').textContent = `Lv.${S.level} ｜ 點擊撫摸 Una`;
   document.getElementById('stageBadge').textContent = STAGES[S.stage].name;
 }
 
-function msg(txt) { document.getElementById('messageLog').textContent = 'ð¬ '+txt; }
+function msg(txt) { document.getElementById('messageLog').textContent = '💬 '+txt; }
 
 function emo(e) {
   const el = document.getElementById('emotionBubble');
@@ -448,62 +448,62 @@ function anim(cls) {
   sp.classList.add(cls); setTimeout(()=>sp.classList.remove(cls), 700);
 }
 
-// âââââââââââââââââââ ACTIONS âââââââââââââââââââ
+// ─────────────────── ACTIONS ───────────────────
 function feedUna() {
-  if (S.isSleeping) { msg('Una æ­£å¨ç¡è¦º...'); return; }
-  if (S.hunger >= 96) { msg('Una å·²ç¶å¾é£½äºï¼'); emo('ð¤'); return; }
+  if (S.isSleeping) { msg('Una 正在睡覺...'); return; }
+  if (S.hunger >= 96) { msg('Una 已經很飽了！'); emo('😤'); return; }
   S.hunger = Math.min(100, S.hunger+22); gainExp(2);
-  emo('ð'); anim('bounce'); msg('Una åå¾å¥½éå¿ï¼å§å§å§å§ï½');
+  emo('😋'); anim('bounce'); msg('Una 吃得好開心！吧唧吧唧～');
   updateStats(); updateSprite();
 }
 
 function playWithUna() {
-  if (S.isSleeping) { msg('Una æ­£å¨ç¡è¦º...'); return; }
-  if (S.energy < 12) { msg('Una å¤ªç´¯äºï¼è®ç ä¼æ¯å§ï¼'); emo('ð©'); return; }
+  if (S.isSleeping) { msg('Una 正在睡覺...'); return; }
+  if (S.energy < 12) { msg('Una 太累了，讓牠休息吧！'); emo('😩'); return; }
   S.happiness = Math.min(100, S.happiness+22);
   S.energy = Math.max(0, S.energy-16);
   S.hunger = Math.max(0, S.hunger-6);
-  gainExp(3); emo('ð'); anim('bounce'); msg('Una ç©å¾è¶éå¿ï¼');
+  gainExp(3); emo('🎉'); anim('bounce'); msg('Una 玩得超開心！');
   updateStats(); updateSprite();
 }
 
 function sleepUna() {
   if (S.isSleeping) {
     S.isSleeping = false; clearInterval(sleepTimer);
-    document.getElementById('sleepBtn').innerHTML='<span class="btn-icon">ð´</span><span>ç¡è¦º</span>';
-    msg('Una éä¾äºï¼ç²¾ååæ²ï¼'); emo('âï¸'); anim('bounce'); updateSprite('normal');
+    document.getElementById('sleepBtn').innerHTML='<span class="btn-icon">😴</span><span>睡覺</span>';
+    msg('Una 醒來了！精力充沛！'); emo('☀️'); anim('bounce'); updateSprite('normal');
     return;
   }
   S.isSleeping = true;
-  document.getElementById('sleepBtn').innerHTML='<span class="btn-icon">â°</span><span>å«é</span>';
-  msg('Una é²å¥å¤¢é... é»æãå«éãåéç '); updateSprite('sleeping');
+  document.getElementById('sleepBtn').innerHTML='<span class="btn-icon">⏰</span><span>叫醒</span>';
+  msg('Una 進入夢鄉... 點擊「叫醒」喚醒牠'); updateSprite('sleeping');
   sleepTimer = setInterval(() => {
     S.energy = Math.min(100, S.energy+5);
     updateStats();
     if (S.energy >= 100) {
       S.isSleeping = false; clearInterval(sleepTimer);
-      document.getElementById('sleepBtn').innerHTML='<span class="btn-icon">ð´</span><span>ç¡è¦º</span>';
-      msg('Una ç¡é£½äºï¼ç²¾åæ»¿æ ¼ï¼'); emo('â¨'); updateSprite('happy');
+      document.getElementById('sleepBtn').innerHTML='<span class="btn-icon">😴</span><span>睡覺</span>';
+      msg('Una 睡飽了，精力滿格！'); emo('✨'); updateSprite('happy');
     }
   }, 1400);
 }
 
 function healUna() {
-  if (S.isSleeping) { msg('Una æ­£å¨ç¡è¦º...'); return; }
+  if (S.isSleeping) { msg('Una 正在睡覺...'); return; }
   S.happiness = Math.min(100, S.happiness+12);
-  emo('ð'); anim('bounce'); msg('ä½ æº«æå°æ«æ¸äº Unaï¼ç å¹¸ç¦å°çèµ·ç¼çï¼');
+  emo('💖'); anim('bounce'); msg('你溫柔地撫摸了 Una，牠幸福地瞇起眼睛！');
   updateStats(); updateSprite();
 }
 
 function petUna() {
   if (S.isSleeping) return;
-  const emojis = ['ð','â¨','ð«','ð¸','â­','ð','ð'];
+  const emojis = ['💕','✨','💫','🌸','⭐','🎀','🌈'];
   emo(emojis[Math.floor(Math.random()*emojis.length)]);
   S.happiness = Math.min(100, S.happiness+3);
   anim('bounce'); updateStats(); updateSprite();
 }
 
-// âââââââââââââââââââ EXP & EVOLUTION âââââââââââââââââââ
+// ─────────────────── EXP & EVOLUTION ───────────────────
 function gainExp(n) {
   S.exp += n;
   const epl = STAGES[S.stage].expPerLv;
@@ -518,7 +518,7 @@ function gainExp(n) {
     if (newStage > S.stage) {
       triggerEvolution(newStage);
     } else {
-      emo('â¬ï¸'); msg(`Una åå° Lv.${S.level} äºï¼`);
+      emo('⬆️'); msg(`Una 升到 Lv.${S.level} 了！`);
     }
   }
   updateStats();
@@ -526,37 +526,37 @@ function gainExp(n) {
 
 function triggerEvolution(ns) {
   const ov = document.getElementById('evolutionOverlay');
-  document.getElementById('evolutionText').textContent = `é²åæ ${STAGES[ns].name}ï¼`;
+  document.getElementById('evolutionText').textContent = `進化成 ${STAGES[ns].name}！`;
   ov.classList.add('active');
-  setTimeout(() => { S.stage = ns; ov.classList.remove('active'); updateSprite('happy'); msg(`â¨ Una é²åæ ${STAGES[ns].name} äºï¼`); updateStats(); }, 2500);
+  setTimeout(() => { S.stage = ns; ov.classList.remove('active'); updateSprite('happy'); msg(`✨ Una 進化成 ${STAGES[ns].name} 了！`); updateStats(); }, 2500);
 }
 
-// âââââââââââââââââââ STAT DECAY âââââââââââââââââââ
+// ─────────────────── STAT DECAY ───────────────────
 setInterval(() => {
   if (!S.isSleeping && !S.battleActive) {
     S.hunger    = Math.max(0, S.hunger    - 1.2);
     S.happiness = Math.max(0, S.happiness - 0.6);
     S.energy    = Math.max(0, S.energy    - 0.4);
     updateStats(); updateSprite();
-    if (S.hunger < 20 && Math.random()<.25) { msg('Una å¥¹é¤... å¿«ä¾é¤µé£ï¼'); emo('ð'); }
-    if (S.happiness < 20 && Math.random()<.2) { msg('Una å¥½ç¡è... éªç ç©å§ï¼'); emo('ð¢'); }
+    if (S.hunger < 20 && Math.random()<.25) { msg('Una 好餓... 快來餵食！'); emo('🍖'); }
+    if (S.happiness < 20 && Math.random()<.2) { msg('Una 好無聊... 陪牠玩吧！'); emo('😢'); }
   }
 }, 5000);
 
-// âââââââââââââââââââ BATTLE SYSTEM âââââââââââââââââââ
+// ─────────────────── BATTLE SYSTEM ───────────────────
 const ENEMIES = [
-  { name:'å°å²èå§',  emoji:'ð¢', hp:40,  atk:7,  reward:5 },
-  { name:'ç«ç°è²',    emoji:'ð±', hp:65,  atk:13, reward:9 },
-  { name:'é»æ°£é¾',    emoji:'ð', hp:90,  atk:19, reward:13 },
-  { name:'æå½±ç²¾é',  emoji:'ð§', hp:120, atk:25, reward:18 },
-  { name:'å®å®å¤§é­ç',emoji:'ð¾', hp:180, atk:35, reward:28 },
+  { name:'小史萊姆',  emoji:'🟢', hp:40,  atk:7,  reward:5 },
+  { name:'火焰貓',    emoji:'🐱', hp:65,  atk:13, reward:9 },
+  { name:'電氣龍',    emoji:'🐉', hp:90,  atk:19, reward:13 },
+  { name:'暗影精靈',  emoji:'🧝', hp:120, atk:25, reward:18 },
+  { name:'宇宙大魔王',emoji:'👾', hp:180, atk:35, reward:28 },
 ];
 
 let B = { enemy:null, unaHp:0, eTurn:false };
 
 function startBattle() {
-  if (S.isSleeping) { msg('Una æ­£å¨ç¡è¦ºï¼'); return; }
-  if (S.energy < 20) { msg('Una å¤ªç´¯äºï¼ç¡æ³å°æ°ï¼'); emo('ð©'); return; }
+  if (S.isSleeping) { msg('Una 正在睡覺！'); return; }
+  if (S.energy < 20) { msg('Una 太累了，無法對戰！'); emo('😩'); return; }
   const idx = Math.min(Math.floor(S.level/5), ENEMIES.length-1);
   const pool = ENEMIES.slice(0, idx+1);
   const e = { ...pool[Math.floor(Math.random()*pool.length)] };
@@ -566,7 +566,7 @@ function startBattle() {
   document.getElementById('enemySprite').textContent = e.emoji;
   document.getElementById('enemyName').textContent = e.name;
   updateBattleHP();
-  document.getElementById('battleLog').textContent = `âï¸ éçç ${e.name} åºç¾äºï¼`;
+  document.getElementById('battleLog').textContent = `⚔️ 野生的 ${e.name} 出現了！`;
   document.getElementById('attackBtn').disabled = false;
   document.getElementById('specialBtn').disabled = false;
   document.getElementById('battleOverlay').classList.add('active');
@@ -586,7 +586,7 @@ function updateBattleHP() {
 function doEnemyTurn() {
   const d = Math.max(1, B.enemy.atk + Math.floor(Math.random()*8)-3);
   B.unaHp -= d;
-  bLog(`ð¥ ${B.enemy.name} æ»æï¼Una åå° ${d} é»å·å®³ï¼`);
+  bLog(`💥 ${B.enemy.name} 攻擊！Una 受到 ${d} 點傷害！`);
   updateBattleHP();
   if (B.unaHp <= 0) { endBattle(false); return; }
   document.getElementById('attackBtn').disabled = false;
@@ -598,7 +598,7 @@ function battleAttack() {
   document.getElementById('specialBtn').disabled=true;
   const d = Math.max(1, S.atk + Math.floor(Math.random()*10)-4);
   B.enemy.hp -= d;
-  bLog(`â¨ Una æ»æï¼é æ ${d} é»å·å®³ï¼`);
+  bLog(`✨ Una 攻擊！造成 ${d} 點傷害！`);
   updateBattleHP();
   if (B.enemy.hp <= 0) { endBattle(true); return; }
   setTimeout(doEnemyTurn, 800);
@@ -611,7 +611,7 @@ function battleSpecial() {
   document.getElementById('specialBtn').disabled=true;
   const d = Math.max(1, S.atk*2 + Math.floor(Math.random()*12));
   B.enemy.hp -= d;
-  bLog(`â¡ Una ä½¿åºå¿æ®ºæï¼é æ ${d} é»å·¨å¤§å·å®³ï¼`);
+  bLog(`⚡ Una 使出必殺技！造成 ${d} 點巨大傷害！`);
   updateBattleHP();
   if (B.enemy.hp <= 0) { endBattle(true); return; }
   setTimeout(doEnemyTurn, 800);
@@ -625,13 +625,13 @@ function endBattle(won) {
     gainExp(B.enemy.reward);
     S.happiness = Math.min(100, S.happiness+18);
     S.energy = Math.max(0, S.energy-18);
-    bLog(`\nð Una ç²åï¼ç²å¾ ${B.enemy.reward} é»ç¶é©å¼ï¼`);
-    msg(`Una ææäº ${B.enemy.name}o¼å¤ªå²å®³äºï¼`);
+    bLog(`\n🎉 Una 獲勝！獲得 ${B.enemy.reward} 點經驗值！`);
+    msg(`Una 打敗了 ${B.enemy.name}o��太厲害了！`);
   } else {
     S.happiness = Math.max(0, S.happiness-22);
     S.energy = Math.max(0, S.energy-30);
-    bLog('\nð¢ Una ä¸æ¯åå°... éè¦å¥½å¥½ä¼æ¯ï¼');
-    msg('Una è¼¸æäºå°æ°ï¼å¿«è®ç ç¡è¦ºæ¢å¾©å§ï¼');
+    bLog('\n😢 Una 不支倒地... 需要好好休息！');
+    msg('Una 輸掉了對戰，快讓牠睡覺恢復吧！');
   }
   updateStats();
   setTimeout(() => {
@@ -643,12 +643,13 @@ function endBattle(won) {
 function fleeBattle() {
   S.battleActive = false;
   document.getElementById('battleOverlay').classList.remove('active');
-  msg('Una æåéè·äºï¼'); updateSprite();
+  msg('Una 成功逃跑了！'); updateSprite();
 }
 
-// âââââââââââââââââââ INIT âââââââââââââââââââ
+// ─────────────────── INIT ───────────────────
 updateSprite('normal');
 updateStats();
 </script>
 </body>
 </html>
+
